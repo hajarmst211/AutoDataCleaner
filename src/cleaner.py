@@ -69,5 +69,5 @@ def main_cleaner(path):
     df= drop_column_if_too_many_nulls(df)
     df= handle_missing_values(df)
     file_name = os.path.splitext(os.path.basename(path))[0]
-    df.to_csv(archive_folder_path + file_name + "cleaned.csv")
+    df.to_csv(archive_folder_path + file_name + "_cleaned.csv")
     return 0
