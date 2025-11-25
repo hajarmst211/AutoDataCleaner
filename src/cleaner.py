@@ -3,8 +3,10 @@
 import pandas as pd 
 from datetime import date
 from pandas.api.types import is_numeric_dtype
+import os
 
 threshold = 0.5
+archive_folder_path = "../archive_folder/"
 
 def load_data(path):
     return pd.read_csv(path)
@@ -66,5 +68,6 @@ def main_cleaner(path):
     df= transform_dates(df)
     df= drop_column_if_too_many_nulls(df)
     df= handle_missing_values(df)
-    
-    return df
+    file_name = os.path.splitext(os.path.basename(path))[0]
+    df.to_csv(archive_folder_path + file_name + "cleaned.csv")
+    return 0
