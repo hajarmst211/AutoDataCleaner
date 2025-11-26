@@ -8,6 +8,7 @@ data_path = "data/transactions.parquet"
 def import_parquet_into_db():
     connexion = sqlite3.connect("transactions.db")
     cursor = connexion.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS transactions (id, name, amount)")
 
     table = pa.read_table(data_path)
     df= table.to_pandas()
@@ -24,6 +25,3 @@ def import_parquet_into_db():
 
 if __name__ == "__main__":
     import_parquet_into_db()
-
-
-
