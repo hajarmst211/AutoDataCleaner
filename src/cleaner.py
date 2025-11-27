@@ -40,7 +40,7 @@ def drop_column_if_too_many_nulls(df, threshold = 0.6):
         length = len(column_series)
         nulls_ratio = number_of_nulls / length 
         if nulls_ratio > 0.8:   
-            df_copy = df_copy.drop(columns = [df["extra_nulls"].name])
+            df_copy = df_copy.drop(columns = [column.name])
 
     return df_copy
     
