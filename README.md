@@ -1,6 +1,6 @@
 
 # General Information about the Project:
-1. Name of the project: Data Plumbing
+1. Name of the project: Auto Data Cleaner
 2. My Personal intensions from the project: Learning new skills and finding a solution to a widely existing problem.
 3. Global End of the Project: Automate general cleaning of newly added or modified `.csv` files and sending an alert email at the end of the task<br>
 
