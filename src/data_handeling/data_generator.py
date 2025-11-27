@@ -3,8 +3,9 @@
 from faker import Faker
 import random
 import pandas as pd
+from config.extract_statics import get_statics
 
-data_path = "data/transactions.parquet"
+data_path = get_statics("paths")["generated_data"]
 
 def generate_data():
     fake = Faker()

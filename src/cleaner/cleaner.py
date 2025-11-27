@@ -1,12 +1,13 @@
 #cleaner.py
 
 import pandas as pd 
+import os
 from datetime import date
 from pandas.api.types import is_numeric_dtype
-import os
+from config.extract_statics import get_statics
 
-threshold = 0.5
-archive_folder_path = "../archive_folder/"
+threshold = get_statics("thresholds")["date_threshold"]
+archive_folder_path = get_statics("paths")["archive_folder"]
 
 def load_data(path):
     return pd.read_csv(path)
@@ -60,6 +61,13 @@ def handle_missing_values(df):
                 df_copy[column].fillna("Unknown", inplace=True)
 
     return df_copy
+
+def delete_cleaned_file(file_path):
+    raw_file_name = os.path.splitext(os.path.basename(file_path))[0]
+    cleaned_file_path = archive_folder_path + raw_file_name + "_cleaned.csv"
+    os.remove(cleaned_file_path)
+        
+    return 0
 
 def main_cleaner(path):
     df= load_data(path)

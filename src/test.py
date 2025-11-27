@@ -1,4 +1,4 @@
-from cleaner import main_cleaner
+from cleaner.cleaner import main_cleaner
 import pandas as pd
 def main():
     test_df = pd.DataFrame({

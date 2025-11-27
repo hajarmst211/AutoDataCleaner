@@ -1,0 +1,23 @@
+paths:
+  input_folder: "../input_folder/"
+  archive_folder: "../archive_folder/"
+  generated_data: "data/transactions.parquet"
+
+thresholds:
+  null_threshold: 0.8
+  date_threshold: 0.5
+
+mail:
+  from: "khadijamaataoui@outlook.com"
+  to: "aregrag2005@gmail.com"
+  message: |
+    Subject: CSV file cleaning done alert
+
+    Hello,
+
+    The automated data pipeline has detected an anomaly in the latest processed file.
+    Please review the input data and take the necessary corrective action.
+
+    Regards,
+    Automated Monitoring System
+
