@@ -1,6 +1,6 @@
 paths:
   input_folder: "../input_folder/"
-  archive_folder: "../archive_folder/"
+  archive_folder: "archive_folder/"
   generated_data: "data/transactions.parquet"
 
 thresholds:
