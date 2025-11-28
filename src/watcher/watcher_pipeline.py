@@ -1,9 +1,9 @@
 # watcher.py
 
-
-import watchdog.events 
+from watchdog.observers import Observer
+import watchdog.events as events
 import time
-import os
+import threading
 import logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -18,14 +18,31 @@ cleaner = DataCleaner()
 
 
 # this is an inherited class:
-class Handler(watchdog.events.PatternMatchingEventHandler):
+class Handler(events.PatternMatchingEventHandler):
     def __init__(self):
-        watchdog.events.PatternMatchingEventHandler.__init__(
+        events.PatternMatchingEventHandler.__init__(
                                     self, patterns=['*.csv'], 
                                     ignore_directories= True,
                                     ignore_patterns= None,
                                     case_sensitive= True
-                                    )
+                                    )    
+    def start_watcher(self):
+        event_handler = Handler()
+        observer = Observer()
+        observer.schedule(event_handler, input_folder_path, recursive= False)
+        observer.start()
+        logging.info(f"Started the watcher on the folder: {input_folder_path}")
+        # The program stops when ctrl+c is pressed in the keyboard
+        try:
+            while True:
+                time.sleep(60)    
+        except KeyboardInterrupt:
+            observer.stop()
+            logging.info("The watcher is stopped")
+        observer.join()
+
+        
+        
     def _on_created(self, event):
         file_path = event.src_path
         logging.info(f"New file detected: {file_path}")
@@ -45,21 +62,3 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
         except Exception as e:
             logging.error(f"Failed to delete file {event.src_path}: {e}")
 
-    
-    def start_watching(self):
-        event_handler = Handler()
-        observer = watchdog.observers.Observer()
-        observer.schedule(event_handler, input_folder_path, recursive= False)
-        observer.start()
-        logging.info(f"Started the watcher on the folder{input_folder_path}")
-
-        # The program stops when ctrl+c is pressed in the keyboard
-        try:
-            while True:
-                time.sleep(60)    
-        except KeyboardInterrupt:
-            observer.stop()
-            logging.info("The watcher is stopped")
-        observer.join()
-
-    

@@ -5,7 +5,7 @@ import random
 import pandas as pd
 from config.extract_statics import get_statics
 
-data_path = get_statics("paths")["generated_data"]
+data_path = get_statics("paths")["input_folder"]
 
 def generate_data():
     fake = Faker()
@@ -20,9 +20,9 @@ def generate_data():
             "amount" : random_amount + noise
         })
     df = pd.DataFrame(rows)
-    df.to_parquet(data_path)
+    df.to_csv(data_path + "generated_data.csv",index = False)
     
-    return 0
+    return data_path + "generated_data.csv"
         
 if __name__ == "__main__":
     generate_data()

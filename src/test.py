@@ -1,23 +1,42 @@
-from cleaner.cleaner import main_cleaner
+# watcher_test.py
+
+from watcher.watcher_pipeline import Handler
+from cleaner.cleaning_pipeline import DataCleaner
+from data_handling.data_generator import generate_data
 import pandas as pd
+import logging
+import threading
+from config.extract_statics import get_statics
 
 
-def main():
-    test_df = pd.DataFrame(
-        {
-            "name": [" Alice ", "Bob", "Alice ", None, "Charlie"],
-            "age": ["23", "30", None, "30", "23"],
-            "amount": ["100.5", None, "100.5", "100.5", None],
-            "date_str": ["2024-01-01", "notadate", None, "2022-05-05", "2024-01-01"],
-            "extra_nulls": [None, None, None, None, None],
-        }
-    )
+paths_subtree = get_statics("paths")
+input_folder_path = paths_subtree["input_folder"]
 
-    test_df.to_csv("sample_test.csv", index=False)
-    df = main_cleaner("sample_test.csv")
-    print("clean data:", df)
+
+def main_cleaning_test(df_path):
+    try:
+        df = pd.read_csv(df_path)
+        cleaner = DataCleaner()
+        cleaned_df = cleaner.clean(df)
+        # cleaner.save_cleaned_file(cleaned_df, df_path)
+        logging.info("Data cleaned and saved")
+    except Exception as e:
+        logging.error(f"the error is {e}")
+    return 0 
+
+
+def main_watcher_test():
+    try:
+        watcher = Handler()
+        watcher.start_watcher()
+        watcher_thread = threading.Thread(target=watcher.start_watcher, args=(input_folder_path,), daemon=True)
+        watcher_thread.start()
+        generate_data() #simulating a new data in the input folder
+        watcher_thread.join()
+    except Exception as e:
+        logging.error(f"The error is {e}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
-
+    main_watcher_test()

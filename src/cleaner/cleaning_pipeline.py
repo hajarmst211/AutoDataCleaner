@@ -8,7 +8,7 @@ from .cleaner import (
     drop_duplicates,
     strip_columns,
     transform_dates,
-    drop_sparse_columns,
+    drop_column_if_too_many_nulls,
     handle_missing_values,
     delete_cleaned_file
 )
@@ -16,14 +16,14 @@ from .cleaner import (
 archive_folder_path = get_statics("paths")["archive_folder"]
 
 class DataCleaner:
-    def __init__(self, config):
-        self.config = config
+    def __init__(self):
+        self.self = self
 
     def clean(self, df):
         df = drop_duplicates(df)
         df = strip_columns(df)
         df = transform_dates(df)
-        df = drop_sparse_columns(df, threshold=self.config.null_threshold)
+        df = drop_column_if_too_many_nulls(df)
         df = handle_missing_values(df)
         return df
     
@@ -34,5 +34,3 @@ class DataCleaner:
 
     def delete_file(self, path):
         delete_cleaned_file(path)
-        
-    

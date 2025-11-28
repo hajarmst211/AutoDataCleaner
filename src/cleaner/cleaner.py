@@ -6,7 +6,9 @@ from datetime import date
 from pandas.api.types import is_numeric_dtype
 from config.extract_statics import get_statics
 
-threshold = get_statics("thresholds")["date_threshold"]
+date_threshold = get_statics("thresholds")["date_threshold"]
+null_threshold = get_statics("thresholds")["null_threshold"]
+
 archive_folder_path = get_statics("paths")["archive_folder"]
 
 
@@ -14,7 +16,7 @@ def load_data(path):
     return pd.read_csv(path)
 
 
-def drop_duplicated(df):
+def drop_duplicates(df):
     df_copy = df.copy()
     return df_copy.drop_duplicates()
 
@@ -29,15 +31,15 @@ def transform_dates(df):
     df_copy = df.copy()
     for column in df_copy.columns:
         if df_copy[column].dtype == "object":
-            converted = pd.to_datetime(df_copy[column], errors="coerce")
+            converted = pd.to_datetime(df_copy[column],format="%Y-%m-%d",  errors="coerce")
             valid_ratio = converted.notna().mean()
-            if valid_ratio >= threshold:
+            if valid_ratio >= date_threshold:
                 df_copy[column] = converted
 
     return df_copy
 
 
-def drop_column_if_too_many_nulls(df, threshold=0.6):
+def drop_column_if_too_many_nulls(df):
     df_copy = df.copy()
     columns = df_copy.columns
     for column in columns:
@@ -45,7 +47,7 @@ def drop_column_if_too_many_nulls(df, threshold=0.6):
         number_of_nulls = column_series.isna().sum()
         length = len(column_series)
         nulls_ratio = number_of_nulls / length
-        if nulls_ratio > threshold:
+        if nulls_ratio > null_threshold:
             df_copy = df_copy.drop(columns=[column])
 
     return df_copy
@@ -58,13 +60,13 @@ def handle_missing_values(df):
 
         if is_numeric_dtype(df_copy[column]):
             mean = df_copy[column].mean()
-            df_copy[column].fillna(mean, inplace=True)
+            df_copy[column].fillna(mean)
         else:
             mode_series = df_copy[column].mode()
             if not mode_series.empty:
-                df_copy[column].fillna(mode_series.iloc[0], inplace=True)
+                df_copy[column].fillna(mode_series.iloc[0])
             else:
-                df_copy[column].fillna("Unknown", inplace=True)
+                df_copy[column].fillna("Unknown")
 
     return df_copy
 
@@ -79,7 +81,7 @@ def delete_cleaned_file(file_path):
 
 def main_cleaner(path):
     df = load_data(path)
-    df = drop_duplicated(df)
+    df = drop_duplicates(df)
     df = strip_columns(df)
     df = transform_dates(df)
     df = drop_column_if_too_many_nulls(df)
